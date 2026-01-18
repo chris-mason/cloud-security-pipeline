@@ -23,9 +23,8 @@ type IAMEvent struct {
 }
 
 type HECEvent struct {
-    Time  int64    `json:"time"`
-    Index string   `json:"index"`
-    Event IAMEvent `json:"event"`
+	Time  int64    `json:"time"`
+	Event IAMEvent `json:"event"`
 }
 
 func getEnvOrFail(key string) string {
@@ -102,12 +101,10 @@ func generateFakeIAMEvent() IAMEvent {
 	}
 }
 
-func sendEvent(client *http.Client, hecURL, hecToken, index, sourcetype string, event IAMEvent) error {
+func sendEvent(client *http.Client, hecURL, hecToken string, event IAMEvent) error {
 	payload := HECEvent{
-		Time:       time.Now().Unix(),
-		Index:      index,
-		SourceType: sourcetype,
-		Event:      event,
+		Time:  time.Now().Unix(),
+		Event: event,
 	}
 
 	body, err := json.Marshal(payload)
@@ -142,10 +139,6 @@ func main() {
 	hecURL := getEnvOrFail("SPLUNK_HEC_URL")
 	hecToken := getEnvOrFail("SPLUNK_HEC_TOKEN")
 
-	// For now we hardcode these just like the Python script.
-	index := "cloud_security"
-	sourcetype := "json"
-
 	client := buildClient()
 
 	numEvents := 20
@@ -156,7 +149,7 @@ func main() {
 		fmt.Printf("[%d/%d] %s by %s -> %s (sev=%s)\n",
 			i+1, numEvents, ev.Action, ev.Actor, ev.Target, ev.Severity)
 
-		if err := sendEvent(client, hecURL, hecToken, index, sourcetype, ev); err != nil {
+		if err := sendEvent(client, hecURL, hecToken, ev); err != nil {
 			fmt.Println("Error sending event:", err)
 		}
 

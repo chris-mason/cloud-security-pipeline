@@ -1,0 +1,67 @@
+{
+  "Records": [
+    {
+      "eventVersion": "1.08",
+      "userIdentity": {
+        "type": "IAMUser",
+        "principalId": "AIDAEXAMPLEUSER",
+        "arn": "arn:aws:iam::111122223333:user/admin_user",
+        "accountId": "111122223333",
+        "userName": "admin_user"
+      },
+      "eventTime": "2026-01-18T20:15:00Z",
+      "eventSource": "iam.amazonaws.com",
+      "eventName": "CreateUser",
+      "awsRegion": "us-east-1",
+      "sourceIPAddress": "203.0.113.10",
+      "userAgent": "signin.amazonaws.com",
+      "requestParameters": {
+        "userName": "new_user123"
+      },
+      "responseElements": {
+        "user": {
+          "arn": "arn:aws:iam::111122223333:user/new_user123",
+          "userName": "new_user123",
+          "createDate": "2026-01-18T20:15:01Z"
+        }
+      },
+      "requestID": "11111111-2222-3333-4444-555555555555",
+      "eventID": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+      "eventType": "AwsApiCall",
+      "managementEvent": true,
+      "readOnly": false
+    },
+    {
+      "eventVersion": "1.08",
+      "userIdentity": {
+        "type": "IAMUser",
+        "principalId": "AIDAEXAMPLEUSER",
+        "arn": "arn:aws:iam::111122223333:user/admin_user",
+        "accountId": "111122223333",
+        "userName": "admin_user"
+      },
+      "eventTime": "2026-01-18T20:16:30Z",
+      "eventSource": "iam.amazonaws.com",
+      "eventName": "CreateAccessKey",
+      "awsRegion": "us-east-1",
+      "sourceIPAddress": "203.0.113.10",
+      "userAgent": "signin.amazonaws.com",
+      "requestParameters": {
+        "userName": "new_user123"
+      },
+      "responseElements": {
+        "accessKey": {
+          "userName": "new_user123",
+          "accessKeyId": "AKIAEXAMPLEACCESSKEY",
+          "status": "Active",
+          "createDate": "2026-01-18T20:16:31Z"
+        }
+      },
+      "requestID": "66666666-7777-8888-9999-000000000000",
+      "eventID": "ffffffff-eeee-dddd-cccc-bbbbbbbbbbbb",
+      "eventType": "AwsApiCall",
+      "managementEvent": true,
+      "readOnly": false
+    }
+  ]
+}

@@ -23,10 +23,9 @@ type IAMEvent struct {
 }
 
 type HECEvent struct {
-	Time       int64     `json:"time"`
-	Index      string    `json:"index"`
-	SourceType string    `json:"sourcetype"`
-	Event      IAMEvent  `json:"event"`
+    Time  int64    `json:"time"`
+    Index string   `json:"index"`
+    Event IAMEvent `json:"event"`
 }
 
 func getEnvOrFail(key string) string {

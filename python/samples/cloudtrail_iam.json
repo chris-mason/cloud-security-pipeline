@@ -4,12 +4,10 @@
       "eventVersion": "1.08",
       "userIdentity": {
         "type": "IAMUser",
-        "principalId": "AIDAEXAMPLEUSER",
         "arn": "arn:aws:iam::111122223333:user/admin_user",
-        "accountId": "111122223333",
         "userName": "admin_user"
       },
-      "eventTime": "2026-01-18T20:15:00Z",
+      "eventTime": "2026-01-18T20:10:00Z",
       "eventSource": "iam.amazonaws.com",
       "eventName": "CreateUser",
       "awsRegion": "us-east-1",
@@ -18,29 +16,17 @@
       "requestParameters": {
         "userName": "new_user123"
       },
-      "responseElements": {
-        "user": {
-          "arn": "arn:aws:iam::111122223333:user/new_user123",
-          "userName": "new_user123",
-          "createDate": "2026-01-18T20:15:01Z"
-        }
-      },
-      "requestID": "11111111-2222-3333-4444-555555555555",
-      "eventID": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
-      "eventType": "AwsApiCall",
-      "managementEvent": true,
-      "readOnly": false
+      "readOnly": false,
+      "managementEvent": true
     },
     {
       "eventVersion": "1.08",
       "userIdentity": {
         "type": "IAMUser",
-        "principalId": "AIDAEXAMPLEUSER",
         "arn": "arn:aws:iam::111122223333:user/admin_user",
-        "accountId": "111122223333",
         "userName": "admin_user"
       },
-      "eventTime": "2026-01-18T20:16:30Z",
+      "eventTime": "2026-01-18T20:11:30Z",
       "eventSource": "iam.amazonaws.com",
       "eventName": "CreateAccessKey",
       "awsRegion": "us-east-1",
@@ -49,19 +35,101 @@
       "requestParameters": {
         "userName": "new_user123"
       },
-      "responseElements": {
-        "accessKey": {
-          "userName": "new_user123",
-          "accessKeyId": "AKIAEXAMPLEACCESSKEY",
-          "status": "Active",
-          "createDate": "2026-01-18T20:16:31Z"
-        }
+      "readOnly": false,
+      "managementEvent": true
+    },
+    {
+      "eventVersion": "1.08",
+      "userIdentity": {
+        "type": "IAMUser",
+        "arn": "arn:aws:iam::111122223333:user/security_engineer",
+        "userName": "security_engineer"
       },
-      "requestID": "66666666-7777-8888-9999-000000000000",
-      "eventID": "ffffffff-eeee-dddd-cccc-bbbbbbbbbbbb",
-      "eventType": "AwsApiCall",
-      "managementEvent": true,
-      "readOnly": false
+      "eventTime": "2026-01-18T20:12:15Z",
+      "eventSource": "iam.amazonaws.com",
+      "eventName": "AttachUserPolicy",
+      "awsRegion": "us-east-1",
+      "sourceIPAddress": "198.51.100.5",
+      "userAgent": "console.amazonaws.com",
+      "requestParameters": {
+        "userName": "new_user123",
+        "policyArn": "arn:aws:iam::aws:policy/AdministratorAccess"
+      },
+      "readOnly": false,
+      "managementEvent": true
+    },
+    {
+      "eventVersion": "1.08",
+      "userIdentity": {
+        "type": "IAMUser",
+        "arn": "arn:aws:iam::111122223333:user/admin_user",
+        "userName": "admin_user"
+      },
+      "eventTime": "2026-01-18T20:13:45Z",
+      "eventSource": "iam.amazonaws.com",
+      "eventName": "UpdateLoginProfile",
+      "awsRegion": "us-east-1",
+      "sourceIPAddress": "203.0.113.10",
+      "userAgent": "signin.amazonaws.com",
+      "requestParameters": {
+        "userName": "new_user123"
+      },
+      "readOnly": false,
+      "managementEvent": true
+    },
+    {
+      "eventVersion": "1.08",
+      "userIdentity": {
+        "type": "IAMUser",
+        "arn": "arn:aws:iam::111122223333:user/admin_user",
+        "userName": "admin_user"
+      },
+      "eventTime": "2026-01-18T20:14:30Z",
+      "eventSource": "iam.amazonaws.com",
+      "eventName": "DeleteUser",
+      "awsRegion": "us-east-1",
+      "sourceIPAddress": "203.0.113.10",
+      "userAgent": "signin.amazonaws.com",
+      "requestParameters": {
+        "userName": "temporary_contractor"
+      },
+      "readOnly": false,
+      "managementEvent": true
+    },
+    {
+      "eventVersion": "1.08",
+      "userIdentity": {
+        "type": "IAMUser",
+        "arn": "arn:aws:iam::111122223333:user/dev_user1",
+        "userName": "dev_user1"
+      },
+      "eventTime": "2026-01-18T20:15:10Z",
+      "eventSource": "iam.amazonaws.com",
+      "eventName": "ListUsers",
+      "awsRegion": "us-east-1",
+      "sourceIPAddress": "192.0.2.25",
+      "userAgent": "aws-cli/2.15.0",
+      "readOnly": true,
+      "managementEvent": true
+    },
+    {
+      "eventVersion": "1.08",
+      "userIdentity": {
+        "type": "IAMUser",
+        "arn": "arn:aws:iam::111122223333:user/dev_user1",
+        "userName": "dev_user1"
+      },
+      "eventTime": "2026-01-18T20:15:30Z",
+      "eventSource": "iam.amazonaws.com",
+      "eventName": "GetUser",
+      "awsRegion": "us-east-1",
+      "sourceIPAddress": "192.0.2.25",
+      "userAgent": "aws-cli/2.15.0",
+      "requestParameters": {
+        "userName": "admin_user"
+      },
+      "readOnly": true,
+      "managementEvent": true
     }
   ]
 }

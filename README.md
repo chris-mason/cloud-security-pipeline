@@ -76,7 +76,7 @@ index=cloud_security sourcetype=aws_cloudtrail action IN ("CreateUser","AttachUs
 
 ## Roadmap
 
-### Phase 1: Telemetry Pipeline Foundation ✅ Completed
+### Phase 1: Telemetry Pipeline Foundation - Completed
 - [x] Set up local Splunk Enterprise instance with HTTP Event Collector (HEC)
 - [x] Design a normalized security event schema for IAM activity
 - [x] Implement Python-based event generator
@@ -88,7 +88,7 @@ index=cloud_security sourcetype=aws_cloudtrail action IN ("CreateUser","AttachUs
 
 ---
 
-### Phase 2: Real CloudTrail Ingestion ✅ Completed
+### Phase 2: Real CloudTrail Ingestion - Completed
 - [x] Ingest real AWS CloudTrail-style JSON log files
 - [x] Parse CloudTrail records and map them to the normalized schema
 - [x] Handle multiple IAM event types  
@@ -100,7 +100,7 @@ index=cloud_security sourcetype=aws_cloudtrail action IN ("CreateUser","AttachUs
 
 ---
 
-### Phase 3: Detection Engineering 🟡 In Progress
+### Phase 3: Detection Engineering - In Progress
 - [x] Develop SPL detections for high-risk IAM activity  
   - IAM user creation  
   - IAM access key creation
@@ -112,7 +112,7 @@ index=cloud_security sourcetype=aws_cloudtrail action IN ("CreateUser","AttachUs
 
 ---
 
-### Phase 4: Cloud-Native Expansion 🔵 Planned
+### Phase 4: Cloud-Native Expansion - Planned
 - [ ] Pull CloudTrail logs from S3 using AWS SDK
 - [ ] Replace file-based ingestion with event-driven ingestion
 - [ ] Evaluate deployment as a cloud-native service (Lambda / Cloud Run)
@@ -120,7 +120,7 @@ index=cloud_security sourcetype=aws_cloudtrail action IN ("CreateUser","AttachUs
 
 ---
 
-### Phase 5: Hardening & Polish 🔵 Planned
+### Phase 5: Hardening & Polish - Planned
 - [ ] Improve error handling and retry logic
 - [ ] Add batching and basic rate limiting
 - [ ] Refactor configuration management (env-first, deployment-ready)

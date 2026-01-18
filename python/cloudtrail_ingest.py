@@ -27,9 +27,9 @@ def send_event(event: Dict[str, Any]) -> None:
     payload = {
         "time": int(time.time()),
         "index": INDEX,
-        "sourcetype": SOURCETYPE,
         "event": event,
     }
+
 
     headers = {
         "Authorization": f"Splunk {hec_token}",

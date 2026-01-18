@@ -44,6 +44,18 @@ No secrets are committed to the repository.
   cd go
   go run main.go
 
+### Detection: IAM User Creation Activity (CloudTrail)
+
+**Goal:** Identify IAM user creation activity in AWS, grouped by the actor performing the action and the target user being created. This helps highlight bursts of identity changes or unexpected administrators creating new accounts.
+
+**SPL:**
+
+```spl
+index=cloud_security sourcetype=aws_cloudtrail action=CreateUser
+| stats count min(timestamp) as first_seen max(timestamp) as last_seen by actor target severity
+| sort - count
+
+
 ## Roadmap
 
 ### Phase 1: Telemetry Pipeline Foundation (Completed)

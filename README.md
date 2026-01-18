@@ -55,38 +55,83 @@ index=cloud_security sourcetype=aws_cloudtrail action=CreateUser
 | stats count min(timestamp) as first_seen max(timestamp) as last_seen by actor target severity
 | sort - count
 ```
+### Detection: IAM User Creation Followed by Policy Attachment (10 minutes)
+
+**Goal:** Identify potential privilege escalation by detecting when a new IAM user is created 
+and then has a policy attached within a short time window.
+
+**SPL:**
+
+```spl
+index=cloud_security sourcetype=aws_cloudtrail action IN ("CreateUser","AttachUserPolicy")
+| eval event_time = strptime(timestamp, "%Y-%m-%dT%H:%M:%SZ")
+| sort actor target event_time
+| streamstats current=f window=1 last(action) as prev_action last(event_time) as prev_time by actor target
+| eval delta_seconds = event_time - prev_time
+| where prev_action="CreateUser" AND action="AttachUserPolicy" AND delta_seconds <= 600
+| eval minutes_between = round(delta_seconds / 60, 2)
+| table _time actor target prev_action action minutes_between severity
+| sort - _time
+```
 
 ## Roadmap
 
-### Phase 1: Telemetry Pipeline Foundation (Completed)
+### Phase 1: Telemetry Pipeline Foundation ✅ Completed
 - [x] Set up local Splunk Enterprise instance with HTTP Event Collector (HEC)
 - [x] Design a normalized security event schema for IAM activity
 - [x] Implement Python-based event generator
 - [x] Implement Go-based event generator
+- [x] Enforce index and sourcetype via HEC token configuration
 - [x] Ingest structured JSON events into Splunk
 - [x] Validate field extraction and indexing
-- [x] Write initial SPL analysis and detection queries
+- [x] Build ingestion, normalization, and detection dashboard panels
 
-### Phase 2: Real CloudTrail Ingestion (In Progress)
-- [ ] Ingest real AWS CloudTrail JSON log files
-- [ ] Parse CloudTrail records and map them to the normalized schema
-- [ ] Handle multiple IAM event types (CreateUser, DeleteUser, AttachPolicy, AccessKey usage)
-- [ ] Preserve raw CloudTrail events for forensic context
-- [ ] Compare synthetic vs. real CloudTrail telemetry in Splunk
+---
 
-### Phase 3: Detection Engineering
-- [ ] Develop SPL detections for high-risk IAM activity
-- [ ] Identify anomalous identity behavior patterns
-- [ ] Implement severity-based filtering and aggregation
-- [ ] Document detection logic and assumptions
+### Phase 2: Real CloudTrail Ingestion ✅ Completed
+- [x] Ingest real AWS CloudTrail-style JSON log files
+- [x] Parse CloudTrail records and map them to the normalized schema
+- [x] Handle multiple IAM event types  
+  *(CreateUser, DeleteUser, AttachUserPolicy, CreateAccessKey, UpdateLoginProfile, ListUsers, GetUser)*
+- [x] Preserve raw CloudTrail events for forensic context
+- [x] Enrich severity using CloudTrail context  
+  *(readOnly, managementEvent, IAM write vs read operations)*
+- [x] Validate severity distribution and behavior in Splunk dashboards
 
-### Phase 4: Cloud-Native Expansion (Future)
+---
+
+### Phase 3: Detection Engineering 🟡 In Progress
+- [x] Develop SPL detections for high-risk IAM activity  
+  - IAM user creation  
+  - IAM access key creation
+- [x] Implement time-based correlation detection  
+  *(CreateUser → AttachUserPolicy within 10 minutes)*
+- [x] Build multi-panel detection dashboards in Splunk Free
+- [ ] Expand detection coverage to additional IAM abuse patterns
+- [ ] Document detection logic, rationale, and assumptions
+
+---
+
+### Phase 4: Cloud-Native Expansion 🔵 Planned
 - [ ] Pull CloudTrail logs from S3 using AWS SDK
 - [ ] Replace file-based ingestion with event-driven ingestion
 - [ ] Evaluate deployment as a cloud-native service (Lambda / Cloud Run)
-- [ ] Explore cross-cloud support (GCP audit logs)
+- [ ] Explore cross-cloud support (e.g., GCP audit logs)
 
-### Phase 5: Hardening & Polish (Future)
+---
+
+### Phase 5: Hardening & Polish 🔵 Planned
 - [ ] Improve error handling and retry logic
-- [ ] Add basic rate limiting and batching
-- [ ] Refactor configuration management
+- [ ] Add batching and basic rate limiting
+- [ ] Refactor configuration management (env-first, deployment-ready)
+- [ ] Finalize documentation and portfolio presentation
+
+---
+
+### Current State Summary
+At this point, the project demonstrates:
+- End-to-end cloud security telemetry ingestion
+- Real CloudTrail-shaped data normalization
+- Context-aware severity scoring
+- Single-event and multi-event IAM detections
+- Practical Splunk dashboarding under a Free license

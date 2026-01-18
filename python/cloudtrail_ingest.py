@@ -9,7 +9,6 @@ import requests
 SPLUNK_HEC_URL = os.getenv("SPLUNK_HEC_URL")
 SPLUNK_HEC_TOKEN = os.getenv("SPLUNK_HEC_TOKEN")
 INDEX = "cloud_security"
-SOURCETYPE = "json"
 
 
 def require_env(name: str) -> str:

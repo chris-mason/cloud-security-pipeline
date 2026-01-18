@@ -5,11 +5,8 @@ from typing import Any, Dict, List
 
 import requests
 
-
 SPLUNK_HEC_URL = os.getenv("SPLUNK_HEC_URL")
 SPLUNK_HEC_TOKEN = os.getenv("SPLUNK_HEC_TOKEN")
-INDEX = "cloud_security"
-
 
 def require_env(name: str) -> str:
     value = os.getenv(name)
@@ -25,28 +22,27 @@ def send_event(event: Dict[str, Any]) -> None:
 
     payload = {
         "time": int(time.time()),
-        "index": INDEX,
         "event": event,
     }
-
 
     headers = {
         "Authorization": f"Splunk {hec_token}",
         "Content-Type": "application/json",
     }
-
+    
     resp = requests.post(
         hec_url,
         headers=headers,
         data=json.dumps(payload),
-        verify=False,  # self-signed cert in lab
+        verify=False,
     )
 
     print("Status:", resp.status_code, resp.text)
 
 
 def map_cloudtrail_to_normalized(record: Dict[str, Any]) -> Dict[str, Any]:
-    """Map a single CloudTrail record into our normalized schema."""
+    """Map a single CloudTrail record into our normalized schema, with enriched severity."""
+
     event_name = record.get("eventName", "UnknownEvent")
     event_time = record.get("eventTime", time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()))
     event_source = record.get("eventSource", "unknown")
@@ -64,28 +60,87 @@ def map_cloudtrail_to_normalized(record: Dict[str, Any]) -> Dict[str, Any]:
     # Target: for IAM, often the userName in the requestParameters
     target = request_params.get("userName") or "unknown_target"
 
-    # Category: IAM if coming from iam.amazonaws.com, else generic
+    # Category: IAM if coming from iam.amazonaws.com, else generic cloudtrail
     if event_source == "iam.amazonaws.com":
         category = "iam"
     else:
         category = "cloudtrail"
 
-    # Very simple severity mapping for now
-    high_actions = {
-        "DeleteUser",
-        "CreateAccessKey",
-        "DeleteAccessKey",
+    # ------------------------------------------------------------------
+    # Severity logic
+    # ------------------------------------------------------------------
+    # Goal:
+    # - IAM reads/lists  -> low
+    # - IAM writes       -> medium
+    # - Privilege/cred changes -> high
+    # - Everything else  -> medium by default
+    # ------------------------------------------------------------------
+
+    event_name_lower = event_name.lower()
+
+    # CloudTrail flags
+    read_only = bool(record.get("readOnly", False))
+    management_event = bool(record.get("managementEvent", True))
+
+    # Define sets of high-risk IAM actions
+    privilege_actions = {
+        # Policy / permission changes
         "AttachUserPolicy",
+        "DetachUserPolicy",
         "PutUserPolicy",
-        "UpdateLoginProfile",
+        "DeleteUserPolicy",
+        "PutUserPermissionsBoundary",
+        "DeleteUserPermissionsBoundary",
+        # Role/privilege style actions (if ever ingested here)
+        "AttachRolePolicy",
+        "DetachRolePolicy",
+        "PutRolePolicy",
+        "DeleteRolePolicy",
     }
 
-    if event_name in high_actions:
-        severity = "high"
-    elif event_name.lower().startswith("get") or event_name.lower().startswith("list"):
+    credential_actions = {
+        "CreateAccessKey",
+        "DeleteAccessKey",
+        "UpdateLoginProfile",
+        "CreateLoginProfile",
+        "ResetServiceSpecificCredential",
+    }
+
+    user_lifecycle_actions = {
+        "CreateUser",
+        "DeleteUser",
+        "UpdateUser",
+    }
+
+    # Default severity
+    severity = "medium"
+
+    # 1) Obvious reads/lists/describe or explicitly readOnly -> low
+    if (
+        read_only
+        or event_name_lower.startswith("get")
+        or event_name_lower.startswith("list")
+        or event_name_lower.startswith("describe")
+    ):
         severity = "low"
-    else:
+
+    # 2) IAM privilege/credential changes -> high
+    elif event_source == "iam.amazonaws.com" and (
+        event_name in privilege_actions
+        or event_name in credential_actions
+        or event_name in user_lifecycle_actions
+    ):
+        severity = "high"
+
+    # 3) Other IAM write management events -> medium (elevated above reads)
+    elif event_source == "iam.amazonaws.com" and management_event and not read_only:
         severity = "medium"
+
+    # 4) Non-IAM events:
+    #    Keep medium for now; could later lower some to low if readOnly
+    #    or raise some to high based on other services.
+    else:
+        severity = severity  # explicit for readability
 
     normalized = {
         "source": "aws_cloudtrail",
@@ -95,7 +150,7 @@ def map_cloudtrail_to_normalized(record: Dict[str, Any]) -> Dict[str, Any]:
         "target": target,
         "severity": severity,
         "timestamp": event_time,
-        # Preserve full raw record for forensic context
+        # Preserve the full CloudTrail record for forensic context
         "raw": record,
     }
 

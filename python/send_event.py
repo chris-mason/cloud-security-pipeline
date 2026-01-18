@@ -7,6 +7,7 @@ import requests
 # ===== CONFIG =====
 SPLUNK_HEC_URL = os.getenv("SPLUNK_HEC_URL")
 SPLUNK_HEC_TOKEN = os.getenv("SPLUNK_HEC_TOKEN")
+INDEX = "cloud_security"
 
 if not SPLUNK_HEC_URL:
     raise RuntimeError("SPLUNK_HEC_URL environment variable not set")

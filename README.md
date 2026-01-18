@@ -54,7 +54,7 @@ No secrets are committed to the repository.
 index=cloud_security sourcetype=aws_cloudtrail action=CreateUser
 | stats count min(timestamp) as first_seen max(timestamp) as last_seen by actor target severity
 | sort - count
-
+```
 
 ## Roadmap
 
